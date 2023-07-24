@@ -1,9 +1,10 @@
 import MainLayout from "./layouts/main.layout";
+import HomePage from "./pages/home.page";
 
 function App() {
   return (
     <MainLayout>
-      <h1 className="">Hello world!</h1>
+      <HomePage />
     </MainLayout>
   );
 }

@@ -7,7 +7,7 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div>
+    <div className="space-y-6">
       <Navbar />
       {children}
     </div>
