@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { AiFillLinkedin, AiFillGithub } from "react-icons/ai";
 import { BiLogoGmail } from "react-icons/bi";
 
@@ -10,18 +11,16 @@ export const SocialContact = (name: SocialContactSingleType) => {
   switch (name) {
     case "linkedin":
       return {
-        icons: AiFillLinkedin(),
+        icons: createElement(AiFillLinkedin),
       };
     case "github":
       return {
-        icons: AiFillGithub(),
+        icons: createElement(AiFillGithub),
       };
     case "email":
       return {
-        icons: BiLogoGmail(),
+        icons: createElement(BiLogoGmail),
       };
-    default:
-      return {};
   }
 };
 

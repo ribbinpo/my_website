@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { IconContext } from "react-icons";
 
 import { cn } from "../../lib/tw-merge";
@@ -5,7 +6,7 @@ import { ClassValue } from "clsx";
 
 interface SocailItemProps {
   color?: ClassValue;
-  icon: JSX.Element;
+  icon: ReactElement;
 }
 
 export default function SocialItem({ color, icon }: SocailItemProps) {
