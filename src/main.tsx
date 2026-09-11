@@ -1,3 +1,6 @@
+import '@fontsource-variable/jetbrains-mono'
+import '@fontsource-variable/noto-sans'
+import '@fontsource-variable/noto-sans-thai'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
