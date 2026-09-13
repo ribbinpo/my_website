@@ -64,15 +64,13 @@ test("theme follows system, reacts to changes, and remembers manual choice", asy
   await expect(page.locator("html")).toHaveClass("dark");
   await page.emulateMedia({ colorScheme: "light" });
   await expect(page.locator("html")).not.toHaveClass("dark");
-  await page.getByRole("button", { name: "Choose theme" }).click();
-  await page.getByRole("menuitemradio", { name: "Dark", exact: true }).click();
+  await page.getByRole("button", { name: /^Choose theme:/ }).click();
+  await page.getByRole("button", { name: /^Choose theme:/ }).click();
   await expect(page.locator("html")).toHaveClass("dark");
   await page.reload();
   await expect(page.locator("html")).toHaveClass("dark");
-  await page.getByRole("button", { name: "Choose theme" }).click();
-  await page
-    .getByRole("menuitemradio", { name: "System", exact: true })
-    .click();
+  await page.getByRole("button", { name: /^Choose theme:/ }).click();
+  await expect(page.locator("[data-theme-mode]")).toHaveAttribute("data-theme-mode", "system");
   await expect(page.locator("html")).not.toHaveClass("dark");
 });
 
@@ -160,8 +158,8 @@ test("preferences continue working when storage is unavailable", async ({
   await page.goto("/");
   await page.getByRole("button", { name: "TH", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "th");
-  await page.getByRole("button", { name: "เลือกธีม" }).click();
-  await page.getByRole("menuitemradio", { name: "มืด", exact: true }).click();
+  await page.getByRole("button", { name: /^เลือกธีม:/ }).click();
+  await page.getByRole("button", { name: /^เลือกธีม:/ }).click();
   await expect(page.locator("html")).toHaveClass("dark");
 });
 
@@ -274,11 +272,33 @@ test("garden animates, pauses and resumes", async ({ page }) => {
 
 test("garden follows the existing theme controls and honors reduced motion", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Choose theme" }).click();
-  await page.getByRole("menuitemradio", { name: "Dark", exact: true }).click();
+  await page.getByRole("button", { name: /^Choose theme:/ }).click();
+  await page.getByRole("button", { name: /^Choose theme:/ }).click();
   await expect(page.locator(".garden-moon")).toHaveCSS("opacity", "1");
   await expect(page.locator(".robot-night")).toHaveCSS("opacity", "1");
   expect(await page.locator(".garden-scene").evaluate(el => el.getAnimations({subtree:true}).length)).toBe(0);
   await page.getByRole("button", { name: "TH", exact: true }).click();
   await expect(page.locator(".garden-scene > svg")).toHaveAccessibleName("หุ่นยนต์ตัวน้อยนอนหลับในสวนใต้แสงจันทร์และดวงดาว");
+});
+
+test("theme button cycles all modes with keyboard and reverses robot posture smoothly", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference", colorScheme: "light" });
+  await page.goto("/");
+  const toggle = page.locator("[data-theme-mode]");
+  await expect(toggle).toHaveAttribute("data-theme-mode", "system");
+  await toggle.focus();
+  await page.keyboard.press("Enter");
+  await expect(toggle).toHaveAttribute("data-theme-mode", "light");
+  await page.keyboard.press("Space");
+  await expect(toggle).toHaveAttribute("data-theme-mode", "dark");
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await expect.poll(() => page.locator(".robot-day").evaluate(el => getComputedStyle(el).transform)).not.toBe("matrix(1, 0, 0, 1, 0, 0)");
+  // Reverse while the robot is still sitting down; system resolves to light.
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("data-theme-mode", "system");
+  await expect(page.locator(".robot-day")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".robot-day")).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
+  await expect(page.locator(".robot-night")).toHaveCSS("opacity", "0");
+  await page.reload();
+  await expect(toggle).toHaveAttribute("data-theme-mode", "system");
 });

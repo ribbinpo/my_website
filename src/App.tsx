@@ -48,13 +48,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Toaster } from "@/components/ui/sonner";
 import { usePreferences, type Theme } from "@/hooks/use-preferences";
 import {
@@ -256,6 +249,7 @@ function App() {
   const { locale, setLocale, theme, setTheme, resolvedTheme } =
     usePreferences();
   const t = copy[locale];
+  const nextTheme: Theme = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
   const [menuOpen, setMenuOpen] = useState(false);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll();
@@ -371,29 +365,16 @@ function App() {
               </button>
             </div>
             <div className="control-divider" />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t.theme}>
-                  {resolvedTheme === "dark" ? <Moon /> : <Sun />}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuRadioGroup
-                  value={theme}
-                  onValueChange={(value) => setTheme(value as Theme)}
-                >
-                  {(["light", "dark", "system"] as const).map((value, i) => {
-                    const Icon = [Sun, Moon, Monitor][i];
-                    return (
-                      <DropdownMenuRadioItem key={value} value={value}>
-                        <Icon className="size-4 mr-2" />
-                        {t[value]}
-                      </DropdownMenuRadioItem>
-                    );
-                  })}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="icon"
+              data-theme-mode={theme}
+              aria-label={`${t.theme}: ${t[theme]}. ${locale === "en" ? "Switch to" : "เปลี่ยนเป็น"} ${t[nextTheme]}`}
+              title={`${t[theme]} → ${t[nextTheme]}`}
+              onClick={() => setTheme(nextTheme)}
+            >
+              {theme === "system" ? <Monitor /> : theme === "dark" ? <Moon /> : <Sun />}
+            </Button>
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button
