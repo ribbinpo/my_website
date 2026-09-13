@@ -188,14 +188,13 @@ for (const width of [390, 768, 1440]) {
             () => document.documentElement.scrollWidth <= innerWidth,
           ),
         ).toBe(true);
-        await expect(page.locator(".three-canvas")).toHaveAttribute(
+        await expect(page.locator(".robot-garden-art")).toHaveAttribute(
           "data-paused",
           "true",
         );
-        await expect(page.locator(".three-canvas")).toHaveAttribute(
-          "data-state",
-          /ready|fallback/,
-        );
+        await expect(page.locator(".garden-scene")).toHaveCSS("border-radius", "0px");
+        await expect(page.locator(".garden-scene")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        await expect(page.locator(theme === "light" ? ".robot-day" : ".robot-night")).toHaveCSS("opacity", "1");
         expect(
           await page.evaluate(() =>
             document.fonts.check('16px "JetBrains Mono Variable"'),
@@ -213,7 +212,7 @@ for (const width of [390, 768, 1440]) {
             ),
           ).toBe(true);
         await page.screenshot({
-          path: `test-results/visual-${width}-${locale}-${theme}.png`,
+          path: `test-results/restored-garden-${width}-${locale}-${theme}.png`,
           fullPage: true,
         });
         expect(failedAssets).toEqual([]);
@@ -257,68 +256,29 @@ test("side projects label is localized and restored", async ({ page }) => {
   );
 });
 
-test("Three.js renders, animates, pauses and resumes", async ({ page }) => {
-  await page.emulateMedia({
-    reducedMotion: "no-preference",
-    colorScheme: "dark",
-  });
+test("garden animates, pauses and resumes", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference", colorScheme: "dark" });
   await page.goto("/");
-  const host = page.locator(".three-canvas");
-  await expect(host).toHaveAttribute("data-state", "ready");
-  const canvas = host.locator("canvas");
-  const initial = await canvas.screenshot();
-  await expect
-    .poll(async () => (await canvas.screenshot()).equals(initial))
-    .toBe(false);
-  await page
-    .getByRole("button", { name: "Pause animation", exact: true })
-    .click();
+  const host = page.locator(".robot-garden-art");
+  const animation = page.locator(".robot-breathing");
+  await expect(animation).toHaveCSS("animation-play-state", "running");
+  await page.getByRole("button", { name: "Pause animation", exact: true }).click();
   await expect(host).toHaveAttribute("data-paused", "true");
-  await expect
-    .poll(async () => {
-      const first = await canvas.screenshot();
-      return (await canvas.screenshot()).equals(first);
-    })
-    .toBe(true);
-  const paused = await canvas.screenshot();
-  await page
-    .getByRole("button", { name: "Resume animation", exact: true })
-    .click();
+  const paused = await animation.evaluate(el => getComputedStyle(el).transform);
+  await page.waitForTimeout(150);
+  expect(await animation.evaluate(el => getComputedStyle(el).transform)).toBe(paused);
+  await page.getByRole("button", { name: "Resume animation", exact: true }).click();
   await expect(host).toHaveAttribute("data-paused", "false");
-  await expect
-    .poll(async () => (await canvas.screenshot()).equals(paused))
-    .toBe(false);
-  await canvas.evaluate((el) =>
-    el.dispatchEvent(new Event("webglcontextlost", { cancelable: true })),
-  );
-  await expect(host).toHaveAttribute("data-state", "fallback");
-  await expect(page.locator(".sculpture-fallback")).toBeVisible();
+  await expect.poll(() => animation.evaluate(el => getComputedStyle(el).transform)).not.toBe(paused);
 });
 
-test("WebGL unavailable keeps static artwork and profile controls functional", async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    const original = HTMLCanvasElement.prototype.getContext;
-    HTMLCanvasElement.prototype.getContext = function (
-      type: string,
-      ...args: unknown[]
-    ) {
-      if (
-        type === "webgl" ||
-        type === "webgl2" ||
-        type === "experimental-webgl"
-      )
-        return null;
-      return Reflect.apply(original, this, [type, ...args]);
-    } as typeof original;
-  });
+test("garden follows the existing theme controls and honors reduced motion", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator(".three-canvas")).toHaveAttribute(
-    "data-state",
-    "fallback",
-  );
-  await expect(page.locator(".sculpture-fallback")).toBeVisible();
+  await page.getByRole("button", { name: "Choose theme" }).click();
+  await page.getByRole("menuitemradio", { name: "Dark", exact: true }).click();
+  await expect(page.locator(".garden-moon")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".robot-night")).toHaveCSS("opacity", "1");
+  expect(await page.locator(".garden-scene").evaluate(el => el.getAnimations({subtree:true}).length)).toBe(0);
   await page.getByRole("button", { name: "TH", exact: true }).click();
-  await expect(page.locator("html")).toHaveAttribute("lang", "th");
+  await expect(page.locator(".garden-scene > svg")).toHaveAccessibleName("หุ่นยนต์ตัวน้อยนอนหลับในสวนใต้แสงจันทร์และดวงดาว");
 });

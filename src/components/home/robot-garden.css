@@ -1,0 +1,84 @@
+/* The original hero keeps its layout. The scene extends to the viewport edge. */
+.hero-art.robot-garden-art {
+  --ground: #e5ede5; --hill: #eff3ee; --stem: #68865d;
+  --leaf: #8fac74; --leaf-dark: #6c9567; --leaf-light: #aac488;
+  isolation: auto;
+  position: static;
+}
+.robot-garden-art[data-theme="dark"] {
+  --ground: #20342d; --hill: #1c2b25; --stem: #6c927b;
+  --leaf: #668c73; --leaf-dark: #496f5e; --leaf-light: #81a689;
+}
+.garden-figure {
+  position: absolute;
+  inset: 0 auto 90px 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  margin: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.garden-scene { position: absolute; inset: 0; background: transparent; border: 0; border-radius: 0; }
+.garden-scene > svg {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  max-width: 59vw;
+  aspect-ratio: 600 / 540;
+  height: 100%;
+  overflow: visible;
+  mask-image: linear-gradient(to right, transparent, black 15%), linear-gradient(to top, transparent, black 12%);
+  mask-composite: intersect;
+}
+.garden-scene path, .garden-scene ellipse { transition: fill .9s ease, stroke .9s ease; }
+.robot-garden-art > .animation-toggle { top: 55px; right: 0; }
+.garden-distant-hill { fill: var(--hill); }
+.garden-ground { fill: var(--ground); }
+.garden-ground-line { stroke: var(--stem); opacity: .24; }
+.robot-shadow { fill: var(--stem); opacity: .15; }
+.garden-sun, .garden-moon { transform-origin: 300px 480px; transition: transform 1.2s cubic-bezier(.4,0,.2,1), opacity .8s ease; }
+.garden-moon { opacity: 0; transform: rotate(65deg) scale(.8); }
+[data-theme="dark"] .garden-sun { opacity: 0; transform: rotate(-65deg) scale(.8); }
+[data-theme="dark"] .garden-moon { opacity: 1; transform: rotate(0) scale(1); }
+.sun-rays { transform-origin: 448px 116px; animation: sunshine 45s linear infinite; }
+.moon-float { animation: moon-float 6s ease-in-out infinite; }
+.garden-clouds { color: white; opacity: .65; animation: cloud-drift 15s ease-in-out infinite alternate; transition: opacity .8s; }
+[data-theme="dark"] .garden-clouds { opacity: .03; }
+.garden-stars { opacity: 0; color: #e5edce; transition: opacity 1s ease; }
+[data-theme="dark"] .garden-stars { opacity: .8; }
+.garden-stars circle { animation: twinkle 3s ease-in-out infinite alternate; }
+.plant-large { transform-origin: 413px 430px; animation: plant-sway 5s ease-in-out infinite; }
+.plant-small { transform-origin: 357px 429px; animation: plant-sway 3.8s ease-in-out infinite reverse; }
+.robot-day, .robot-night { transition: opacity .5s ease, transform .7s ease; transform-origin: 230px 426px; }
+.robot-night { opacity: 0; transform: translateY(8px); }
+[data-theme="dark"] .robot-day { opacity: 0; transform: translateY(8px); }
+[data-theme="dark"] .robot-night { opacity: 1; transform: translateY(0); }
+.robot-watering { transform-origin: 204px 421px; animation: watering 3.6s ease-in-out infinite; }
+.robot-breathing { transform-origin: 235px 426px; animation: breathing 3.8s ease-in-out infinite; }
+.water-drops path { animation: water-fall 1.3s linear infinite; }
+.sleep-letters text { opacity: 0; animation: sleep 4.2s ease-out infinite; }
+[data-theme="light"] .robot-night *, [data-theme="light"] .garden-moon *, [data-theme="light"] .garden-stars *,
+[data-theme="dark"] .robot-day *, [data-theme="dark"] .garden-sun * { animation-play-state: paused; }
+@keyframes sunshine { to { transform: rotate(360deg); } }
+@keyframes moon-float { 50% { transform: translateY(-5px) rotate(2deg); } }
+@keyframes cloud-drift { to { transform: translateX(20px); } }
+@keyframes twinkle { to { opacity: .3; } }
+@keyframes plant-sway { 0%,100% { transform: rotate(-1.5deg); } 50% { transform: rotate(2deg); } }
+@keyframes watering { 0%,100% { transform: rotate(-1deg); } 50% { transform: rotate(1.5deg) translateY(1px); } }
+@keyframes water-fall { 0% { opacity: 0; transform: translate(0,-2px); } 15% { opacity: .9; } 80% { opacity: .7; } 100% { opacity: 0; transform: translate(9px,47px); } }
+@keyframes breathing { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.015,1.035) rotate(-1deg); } }
+@keyframes sleep { 0% { opacity: 0; transform: translate(0,0) scale(1); } 20% { opacity: .85; } 100% { opacity: 0; transform: translate(28px,-55px); } }
+
+.robot-garden-art[data-paused="true"] .garden-scene * { animation-play-state: paused !important; }
+@media (max-width: 767px) {
+  .hero-art.robot-garden-art { position: relative; isolation: isolate; }
+  .garden-figure { inset: 0 auto 0 50%; }
+  .garden-scene > svg { width: 100%; height: auto; max-width: none; }
+  .robot-garden-art > .animation-toggle { top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .garden-scene, .garden-scene * { animation: none !important; transition: none !important; }
+  .water-drops path { opacity: .7; transform: translate(5px,20px); }
+  .sleep-letters text:first-child { opacity: .8; }
+}
