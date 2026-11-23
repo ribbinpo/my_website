@@ -1,3 +1,4 @@
+import { Reveal } from "@/components/home/reveal.component";
 import { DisplayHeading } from "@/components/home/section-heading.component";
 import { copy, type Locale } from "@/data/profile";
 
@@ -7,16 +8,19 @@ export function Education({ locale }: { locale: Locale }) {
     <section
       id="education"
       aria-labelledby="education-title"
-      className="border-b border-primary bg-band-warm text-on-band-warm"
+      className="flex min-h-screen-section flex-col justify-center border-b border-primary bg-band-warm text-on-band-warm"
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-gutter-xl px-gutter-md py-section md:px-page-margin lg:grid-cols-12">
-        <div className="flex flex-col gap-gutter-sm lg:col-span-6">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-gutter-xl px-gutter-md py-section md:px-page-margin lg:grid-cols-12">
+        <Reveal className="flex flex-col gap-gutter-sm lg:col-span-6">
           <p className="section-label font-label text-label-md uppercase">{t.eduLabel}</p>
           <DisplayHeading id="education-title" className="text-on-band-warm">
             {t.eduTitle}
           </DisplayHeading>
-        </div>
-        <div className="flex flex-col gap-gutter-sm border border-primary bg-surface-container-lowest p-gutter-lg text-on-surface lg:col-span-6">
+        </Reveal>
+        <Reveal
+          index={2}
+          className="flex flex-col gap-gutter-sm border border-primary bg-surface-container-lowest p-gutter-lg text-on-surface lg:col-span-6"
+        >
           <div className="flex flex-wrap items-center justify-between gap-gutter-sm border-b border-outline-variant pb-gutter-xs">
             <p className="font-label text-label-sm text-on-surface-variant uppercase tabular-nums">
               {t.studyDates}
@@ -32,7 +36,7 @@ export function Education({ locale }: { locale: Locale }) {
             {`${t.campus} · ${t.degree}`}
           </p>
           <p className="text-body-md">{t.courses}</p>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

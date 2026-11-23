@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { About } from "@/components/home/about.component";
 import { Contact } from "@/components/home/contact.component";
 import { Education } from "@/components/home/education.component";
@@ -12,8 +12,21 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 export default function HomeView({ locale }: { locale: Locale }) {
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  // One control pauses all continuous motion on the page: the mascot and the ticker.
+  // One control pauses all continuous motion on the page: the mascot, the ticker
+  // and the project carousel autoplay.
   const [paused, setPaused] = useState(false);
+  // The browser tries the URL fragment before React has rendered the sections,
+  // so a deep link like /#contact needs one jump once they exist.
+  useEffect(() => {
+    let id: string;
+    try {
+      id = decodeURIComponent(location.hash.slice(1));
+    } catch {
+      // A malformed escape such as "#%E0%A4%A" cannot name a section: stay at the top.
+      return;
+    }
+    if (id) document.getElementById(id)?.scrollIntoView({ behavior: "instant" });
+  }, []);
   return (
     <div data-motion={paused || reducedMotion ? "paused" : "running"}>
       <Hero
@@ -25,7 +38,7 @@ export default function HomeView({ locale }: { locale: Locale }) {
       <Marquee locale={locale} />
       <About locale={locale} />
       <Experience locale={locale} />
-      <Projects locale={locale} reducedMotion={reducedMotion} />
+      <Projects locale={locale} reducedMotion={reducedMotion} paused={paused} />
       <Recognition locale={locale} />
       <Education locale={locale} />
       <Contact locale={locale} />

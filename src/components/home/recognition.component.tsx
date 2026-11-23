@@ -3,6 +3,7 @@ import {
   DisplayHeading,
   SectionRule,
 } from "@/components/home/section-heading.component";
+import { Reveal } from "@/components/home/reveal.component";
 import { achievements, copy, type Locale } from "@/data/profile";
 import { studioButton } from "@/lib/studio-button";
 import { cn } from "@/lib/utils";
@@ -13,17 +14,19 @@ export function Recognition({ locale }: { locale: Locale }) {
     <section
       id="recognition"
       aria-labelledby="recognition-title"
-      className="border-b border-primary bg-surface"
+      className="flex min-h-screen-section flex-col justify-center border-b border-primary bg-surface"
     >
-      <div className="mx-auto max-w-7xl px-gutter-md py-section md:px-page-margin">
+      <div className="mx-auto w-full max-w-7xl px-gutter-md py-section md:px-page-margin">
         <SectionRule label={t.awardsLabel} aside={t.awardsAside} className="mb-gutter-lg" />
         <DisplayHeading id="recognition-title" className="mb-gutter-xl">
           {t.awardsTitle}
         </DisplayHeading>
         <ul className="divide-y divide-outline-variant border-t border-primary">
-          {achievements.map((item) => (
-            <li
+          {achievements.map((item, i) => (
+            <Reveal
+              as="li"
               key={item.name}
+              index={i}
               className="achievement-row grid grid-cols-1 items-center gap-gutter-sm py-gutter-md md:grid-cols-12"
             >
               <p className="font-label text-label-sm text-on-surface-variant uppercase md:col-span-3">
@@ -71,7 +74,7 @@ export function Recognition({ locale }: { locale: Locale }) {
                   </a>
                 )}
               </div>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>

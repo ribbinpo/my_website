@@ -2,6 +2,7 @@ import {
   DisplayHeading,
   SectionRule,
 } from "@/components/home/section-heading.component";
+import { Reveal } from "@/components/home/reveal.component";
 import { copy, experiences, type Locale } from "@/data/profile";
 
 export function Experience({ locale }: { locale: Locale }) {
@@ -10,17 +11,19 @@ export function Experience({ locale }: { locale: Locale }) {
     <section
       id="experience"
       aria-labelledby="experience-title"
-      className="border-b border-primary bg-surface-container-low"
+      className="flex min-h-screen-section flex-col justify-center border-b border-primary bg-surface-container-low"
     >
-      <div className="mx-auto max-w-7xl px-gutter-md py-section md:px-page-margin">
+      <div className="mx-auto w-full max-w-7xl px-gutter-md py-section md:px-page-margin">
         <SectionRule label={t.expLabel} aside={t.expAside} className="mb-gutter-lg" />
         <DisplayHeading id="experience-title" className="mb-gutter-xl">
           {t.expTitle}
         </DisplayHeading>
         <ol className="flex flex-col border-t border-primary">
           {experiences.map((job, i) => (
-            <li
+            <Reveal
+              as="li"
               key={job.company}
+              index={i}
               className="experience-row grid grid-cols-1 items-start gap-gutter-md border-b border-outline-variant py-gutter-xl last:border-b-0 md:grid-cols-12"
             >
               <div className="flex flex-col gap-gutter-xs md:col-span-4">
@@ -57,7 +60,7 @@ export function Experience({ locale }: { locale: Locale }) {
                   ))}
                 </ul>
               </div>
-            </li>
+            </Reveal>
           ))}
         </ol>
       </div>

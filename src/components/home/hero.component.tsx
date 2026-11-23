@@ -22,9 +22,9 @@ export function Hero({
     <section
       id="top"
       aria-labelledby="hero-title"
-      className="relative z-20 border-b border-primary bg-surface-dim"
+      className="relative z-20 flex min-h-screen-section flex-col justify-center border-b border-primary bg-surface-dim"
     >
-      <div className="relative mx-auto max-w-7xl overflow-x-clip px-gutter-md pt-gutter-lg pb-gutter-lg md:px-page-margin lg:py-gutter-xl">
+      <div className="relative mx-auto w-full max-w-7xl overflow-x-clip px-gutter-md pt-gutter-lg pb-gutter-lg md:px-page-margin lg:py-gutter-xl">
         {/* Desktop halo and technical callouts */}
         <div
           aria-hidden="true"

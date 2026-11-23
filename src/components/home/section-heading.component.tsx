@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Reveal } from "@/components/home/reveal.component";
 import { cn } from "@/lib/utils";
 
 // "01 // LABEL ........ ASIDE" rule, used at the top of each section.
@@ -12,7 +13,7 @@ export function SectionRule({
   className?: string;
 }) {
   return (
-    <div
+    <Reveal
       className={cn(
         "mb-gutter-xl flex flex-wrap items-center justify-between gap-gutter-sm border-b border-outline-variant pb-gutter-sm",
         className,
@@ -26,11 +27,11 @@ export function SectionRule({
           {aside}
         </p>
       )}
-    </div>
+    </Reveal>
   );
 }
 
-// Uppercase display headline with the magenta square full stop.
+// Uppercase display headline (revealed on scroll) with the magenta square full stop.
 export function DisplayHeading({
   id,
   children,
@@ -41,7 +42,9 @@ export function DisplayHeading({
   className?: string;
 }) {
   return (
-    <h2
+    <Reveal
+      as="h2"
+      index={1}
       id={id}
       className={cn(
         "font-display text-display-md-mobile text-primary uppercase md:text-display-md",
@@ -50,6 +53,6 @@ export function DisplayHeading({
     >
       {children}
       <span className="headline-dot" aria-hidden="true" />
-    </h2>
+    </Reveal>
   );
 }

@@ -73,6 +73,21 @@
   --focus: #f9b988;
 }
 
+/*
+ * Motion timing for scripted (Framer Motion) animation. Mirrored in
+ * src/constants/motion.constant.ts; keep both in sync. CSS transitions use the
+ * Tailwind duration scale (duration-100 for state flips, duration-200 for fades).
+ */
+:root {
+  --motion-duration-reveal: 600ms;
+  --motion-duration-panel: 400ms;
+  --motion-duration-indicator: 350ms;
+  --motion-stagger: 80ms;
+  --motion-distance-reveal: 24px;
+  --motion-distance-panel: 24px;
+  --motion-carousel-interval: 4000ms;
+}
+
 @theme inline {
   /* Typefaces. Noto Sans Thai is the Thai fallback for every role. */
   --font-display: "Schibsted Grotesk", "Noto Sans Thai Variable", ui-sans-serif, sans-serif;
@@ -212,8 +227,8 @@
     border-color: var(--outline-variant);
   }
   html {
-    scroll-behavior: smooth;
-    scroll-padding-top: calc(var(--spacing-header) + var(--spacing-gutter-md));
+    /* Anchors land flush under the sticky header so full-height sections fill the view. */
+    scroll-padding-top: var(--spacing-header);
   }
   body {
     margin: 0;
@@ -245,6 +260,19 @@
   h2 {
     text-wrap: balance;
   }
+}
+
+/* Smooth in-page navigation, only when the user has not asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Full-page section: at least one viewport tall below the sticky header, never clipped.
+   svh keeps the height stable while mobile browser bars show and hide. */
+@utility min-h-screen-section {
+  min-height: calc(100svh - var(--spacing-header));
 }
 
 /* Thai has taller glyphs and no case: open up the tight display settings. */
@@ -322,7 +350,7 @@ html[lang="th"] :is(.text-headline-md, .text-title-lg, .text-title-md) {
   }
 }
 
-/* Project carousel: native scroll-snap on desktop, stacked list below lg. */
+/* Project carousel: native scroll-snap at every size. */
 .project-track {
   scrollbar-width: none;
 }
@@ -330,10 +358,15 @@ html[lang="th"] :is(.text-headline-md, .text-title-lg, .text-title-md) {
   display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* Scroll reveals must never leave content invisible on paper. */
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .animate-mascot-float,
   .animate-halo-pulse,
   .animate-marquee {
