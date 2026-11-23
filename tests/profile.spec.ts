@@ -1,7 +1,7 @@
 import { openProjectFixture } from "./helpers/project-fixture";
 import { SIDE_PROJECTS } from "../src/data/side-projects";
 import AxeBuilder from "@axe-core/playwright";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./helpers/fixtures";
 import { readFile } from "node:fs/promises";
 
 test("English profile, complete content, links, and original CV download", async ({
@@ -74,14 +74,9 @@ test("theme follows system, reacts to changes, and remembers manual choice", asy
   await expect(page.locator("html")).not.toHaveClass("dark");
 });
 
-test("project filters and keyboard dialog focus management", async ({
-  page,
-}) => {
+test("project dialog keyboard focus management", async ({ page }) => {
   await openProjectFixture(page);
-  await page.getByRole("tab", { name: "Web & AI" }).click();
-  await expect(page.locator(".project-card")).toHaveCount(3);
-  await page.getByRole("tab", { name: "Blockchain & Mobile" }).click();
-  await expect(page.locator(".project-card")).toHaveCount(2);
+  await expect(page.locator(".project-card")).toHaveCount(5);
   const trigger = page.getByRole("button", {
     name: "Explore project: Transcrypt V2",
   });
@@ -97,11 +92,13 @@ test("project filters and keyboard dialog focus management", async ({
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
-  await page.getByRole("tab", { name: "All projects" }).click();
-  await expect(page.locator(".project-card")).toHaveCount(5);
 });
 
-test("mobile navigation, active links, and skip link", async ({ page }) => {
+test("mobile navigation, active links, and skip link", async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name === "desktop",
+    "Sets a 390px phone viewport; the mobile project covers it.",
+  );
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.keyboard.press("Tab");
@@ -166,7 +163,12 @@ test("preferences continue working when storage is unavailable", async ({
 for (const width of [390, 768, 1440]) {
   for (const locale of ["en", "th"]) {
     for (const theme of ["light", "dark"]) {
-      test(`layout ${width}px / ${locale} / ${theme}`, async ({ page }) => {
+      test(`layout ${width}px / ${locale} / ${theme}`, async ({ page }, testInfo) => {
+        const owner = width < 768 ? "mobile" : "desktop";
+        test.skip(
+          testInfo.project.name !== owner,
+          `Sets its own ${width}px viewport; only the ${owner} project runs it.`,
+        );
         await page.setViewportSize({ width, height: 960 });
         await page.addInitScript(
           ({ locale, theme }) => {
@@ -186,23 +188,30 @@ for (const width of [390, 768, 1440]) {
             () => document.documentElement.scrollWidth <= innerWidth,
           ),
         ).toBe(true);
-        await expect(page.locator(".robot-garden-art")).toHaveAttribute(
-          "data-paused",
-          "true",
+        // Mobile emulation widens the layout viewport to fit overflow, so also
+        // check the header controls against the requested width directly.
+        const headerRight = await page.evaluate(() =>
+          Math.max(
+            ...[...document.querySelectorAll("header a, header button")]
+              .filter((el) => (el as HTMLElement).offsetParent)
+              .map((el) => el.getBoundingClientRect().right),
+          ),
         );
-        await expect(page.locator(".garden-scene")).toHaveCSS("border-radius", "0px");
-        await expect(page.locator(".garden-scene")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-        await expect(page.locator(theme === "light" ? ".robot-day" : ".robot-night")).toHaveCSS("opacity", "1");
+        expect(headerRight).toBeLessThanOrEqual(width);
+        const mascot = page.getByTestId("hero-mascot");
+        await expect(mascot).toBeVisible();
+        await expect(mascot).toHaveAttribute("width", "896");
+        await expect(mascot).toHaveAttribute("height", "1200");
+        await expect(mascot).not.toHaveAttribute("loading", "lazy");
+        expect(
+          await mascot.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0),
+        ).toBe(true);
+        // Playwright runs with reduced motion, so nothing should be animating.
         expect(
           await page.evaluate(() =>
-            document.fonts.check('16px "JetBrains Mono Variable"'),
+            document.getAnimations().filter((a) => a.playState === "running").length,
           ),
-        ).toBe(true);
-        expect(
-          await page.evaluate(() =>
-            document.fonts.check('16px "Noto Sans Variable"'),
-          ),
-        ).toBe(true);
+        ).toBe(0);
         if (locale === "th")
           expect(
             await page.evaluate(() =>
@@ -210,7 +219,7 @@ for (const width of [390, 768, 1440]) {
             ),
           ).toBe(true);
         await page.screenshot({
-          path: `test-results/restored-garden-${width}-${locale}-${theme}.png`,
+          path: `test-results/studio-${width}-${locale}-${theme}.png`,
           fullPage: true,
         });
         expect(failedAssets).toEqual([]);
@@ -228,14 +237,19 @@ for (const theme of ["light", "dark"]) {
       theme,
     );
     await openProjectFixture(page);
+    if (theme === "dark") await expect(page.locator("html")).toHaveClass("dark");
+    else await expect(page.locator("html")).not.toHaveClass("dark");
     const audit = () =>
       new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
         .analyze();
     expect((await audit()).violations).toEqual([]);
+    await page.getByRole("tab", { name: /AI & automation/ }).click();
+    expect((await audit()).violations).toEqual([]);
     await page
       .getByRole("button", { name: "Explore project: CRM System" })
       .click();
+    await expect(page.getByRole("dialog")).toBeVisible();
     expect((await audit()).violations).toEqual([]);
     await page.keyboard.press("Escape");
     await page.getByRole("button", { name: "TH", exact: true }).click();
@@ -245,44 +259,17 @@ for (const theme of ["light", "dark"]) {
 
 test("side projects label is localized and restored", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("#projects .section-heading .eyebrow")).toHaveText(
-    "03 / My side projects",
+  await expect(page.locator("#projects .section-label")).toHaveText(
+    "03 // Selected work",
   );
   await page.getByRole("button", { name: "TH", exact: true }).click();
-  await expect(page.locator("#projects .section-heading .eyebrow")).toHaveText(
-    "03 / โปรเจกต์ส่วนตัวของผม",
+  await expect(page.locator("#projects .section-label")).toHaveText(
+    "03 // ผลงานคัดสรร",
   );
 });
 
-test("garden animates, pauses and resumes", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference", colorScheme: "dark" });
-  await page.goto("/");
-  const host = page.locator(".robot-garden-art");
-  const animation = page.locator(".robot-breathing");
-  await expect(animation).toHaveCSS("animation-play-state", "running");
-  await page.getByRole("button", { name: "Pause animation", exact: true }).click();
-  await expect(host).toHaveAttribute("data-paused", "true");
-  const paused = await animation.evaluate(el => getComputedStyle(el).transform);
-  await page.waitForTimeout(150);
-  expect(await animation.evaluate(el => getComputedStyle(el).transform)).toBe(paused);
-  await page.getByRole("button", { name: "Resume animation", exact: true }).click();
-  await expect(host).toHaveAttribute("data-paused", "false");
-  await expect.poll(() => animation.evaluate(el => getComputedStyle(el).transform)).not.toBe(paused);
-});
-
-test("garden follows the existing theme controls and honors reduced motion", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: /^Choose theme:/ }).click();
-  await page.getByRole("button", { name: /^Choose theme:/ }).click();
-  await expect(page.locator(".garden-moon")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".robot-night")).toHaveCSS("opacity", "1");
-  expect(await page.locator(".garden-scene").evaluate(el => el.getAnimations({subtree:true}).length)).toBe(0);
-  await page.getByRole("button", { name: "TH", exact: true }).click();
-  await expect(page.locator(".garden-scene > svg")).toHaveAccessibleName("หุ่นยนต์ตัวน้อยนอนหลับในสวนใต้แสงจันทร์และดวงดาว");
-});
-
-test("theme button cycles all modes with keyboard and reverses robot posture smoothly", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference", colorScheme: "light" });
+test("theme button cycles all modes with the keyboard", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   const toggle = page.locator("[data-theme-mode]");
   await expect(toggle).toHaveAttribute("data-theme-mode", "system");
@@ -291,14 +278,11 @@ test("theme button cycles all modes with keyboard and reverses robot posture smo
   await expect(toggle).toHaveAttribute("data-theme-mode", "light");
   await page.keyboard.press("Space");
   await expect(toggle).toHaveAttribute("data-theme-mode", "dark");
+  await expect(page.locator("html")).toHaveClass("dark");
   await expect(page.getByRole("menu")).toHaveCount(0);
-  await expect.poll(() => page.locator(".robot-day").evaluate(el => getComputedStyle(el).transform)).not.toBe("matrix(1, 0, 0, 1, 0, 0)");
-  // Reverse while the robot is still sitting down; system resolves to light.
-  await toggle.click();
+  await toggle.press("Enter");
   await expect(toggle).toHaveAttribute("data-theme-mode", "system");
-  await expect(page.locator(".robot-day")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".robot-day")).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
-  await expect(page.locator(".robot-night")).toHaveCSS("opacity", "0");
+  await expect(page.locator("html")).not.toHaveClass("dark");
   await page.reload();
   await expect(toggle).toHaveAttribute("data-theme-mode", "system");
 });

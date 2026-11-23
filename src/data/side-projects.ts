@@ -1,30 +1,75 @@
-import { type Localized } from "@/data/profile";
+import { text, type Localized } from "@/data/profile";
 
 export type ProjectArtwork =
-  "network" | "website" | "payment" | "wallet" | "survey";
+  | "agents"
+  | "assets"
+  | "cloud"
+  | "network"
+  | "website"
+  | "payment"
+  | "wallet"
+  | "survey";
 
 export interface Project {
   id: string;
   artwork?: ProjectArtwork;
   name: string;
-  company: string;
+  company?: string;
   category: string;
   kind: Localized;
   summary: Localized;
-  challenge: Localized;
-  contributions: Localized[];
-  outcome: Localized;
+  challenge?: Localized;
+  contributions?: Localized[];
+  outcome?: Localized;
   tags: Localized[];
 }
 // Optional translations for category names. Unlisted categories use their name as-is.
 export const PROJECT_CATEGORY_LABELS: Record<string, Localized> = {
   web: { en: "Web & AI", th: "เว็บและ AI" },
   blockchain: { en: "Blockchain & Mobile", th: "บล็อกเชนและมือถือ" },
+  ai: { en: "AI & automation", th: "AI และระบบอัตโนมัติ" },
+  devops: { en: "Cloud & DevOps", th: "คลาวด์และ DevOps" },
 };
 
-// Edit, add, or reorder entries here. Cards, filters, and dialogs render from this list.
-// The existing CV projects are retained until replacement side-project content is supplied.
+// Edit, add, or reorder entries here. The carousel and dialogs render from this list.
+// The earlier CV projects are kept below, commented out, until they are needed again.
 export const SIDE_PROJECTS: readonly Project[] = [
+  {
+    id: "ai-workflow-engine",
+    artwork: "agents",
+    name: "AI Workflow Engine",
+    category: "ai",
+    kind: text("LangChain / AI agents", "LangChain / AI Agent"),
+    summary: text(
+      "Production multi-agent orchestration pipeline built with LangChain and Langfuse observability, automating complex business operations with deterministic guardrails.",
+      "ไปป์ไลน์ประสานงาน AI หลายเอเจนต์สำหรับใช้งานจริง พัฒนาด้วย LangChain และติดตามผลด้วย Langfuse ช่วยให้งานธุรกิจที่ซับซ้อนทำงานอัตโนมัติภายใต้ข้อกำกับที่คาดการณ์ได้",
+    ),
+    tags: [text("LangChain", "LangChain"), text("Langfuse", "Langfuse"), text("AI agents", "AI Agent")],
+  },
+  {
+    id: "digital-asset-infra",
+    artwork: "assets",
+    name: "Digital Asset Infra",
+    category: "blockchain",
+    kind: text("Web3 / Smart contracts", "Web3 / สมาร์ตคอนแทรกต์"),
+    summary: text(
+      "End-to-end web and mobile asset platform integrating audited Solidity smart contracts, transaction pipelines, and clear user-facing signing flows.",
+      "แพลตฟอร์มสินทรัพย์ดิจิทัลบนเว็บและมือถือแบบครบวงจร เชื่อมต่อสมาร์ตคอนแทรกต์ Solidity ที่ผ่านการตรวจสอบ ไปป์ไลน์ธุรกรรม และขั้นตอนการลงนามที่ผู้ใช้เข้าใจง่าย",
+    ),
+    tags: [text("Solidity", "Solidity"), text("Web3", "Web3"), text("Mobile", "มือถือ")],
+  },
+  {
+    id: "cloud-observability",
+    artwork: "cloud",
+    name: "Cloud Observability",
+    category: "devops",
+    kind: text("DevOps / Kubernetes", "DevOps / Kubernetes"),
+    summary: text(
+      "Resilient microservices deployment stack on Kubernetes with automated CI/CD, Grafana telemetry dashboards, and domain-driven service boundaries.",
+      "ระบบติดตั้งไมโครเซอร์วิสที่ทนทานบน Kubernetes พร้อม CI/CD อัตโนมัติ แดชบอร์ดข้อมูลระบบด้วย Grafana และขอบเขตบริการตามแนวคิด Domain-driven design",
+    ),
+    tags: [text("Kubernetes", "Kubernetes"), text("CI/CD", "CI/CD"), text("Grafana", "Grafana")],
+  },
   // {
   //   id: "crm",
   //   artwork: "network",

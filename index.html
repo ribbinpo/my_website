@@ -8,7 +8,25 @@
       name="description"
       content="I’m Teerawut Saesim, a Software Engineer designing software architectures and building end-to-end products with practical AI."
     />
-    <meta name="theme-color" content="#146c5d" />
+    <meta name="theme-color" content="#d8dbd5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111411" media="(prefers-color-scheme: dark)" />
+    <!-- Hero mascot (LCP on desktop). Vite rewrites these to the hashed asset URLs;
+         imagesizes matches the <img sizes> in hero.component.tsx. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      fetchpriority="high"
+      href="/src/assets/images/hero-mascot-896.webp"
+      imagesrcset="/src/assets/images/hero-mascot-448.webp 448w, /src/assets/images/hero-mascot-896.webp 896w"
+      imagesizes="(min-width: 1024px) 540px, 144px"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Schibsted+Grotesk:wght@700;800;900&family=Spline+Sans+Mono:wght@500;600;700&display=swap"
+    />
     <title>Teerawut Saesim — Software Engineer</title>
     <script>
       (() => {
