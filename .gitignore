@@ -26,3 +26,7 @@ dist-ssr
 # Browser test output
 test-results/
 playwright-report/
+
+# QA evidence (Claude Code qa agent)
+.qa-evidence/
+.qa-evidence.md

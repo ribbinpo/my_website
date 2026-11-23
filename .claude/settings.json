@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
+    },
+    "heydamir": {
+      "source": {
+        "source": "github",
+        "repo": "heydamir/unslop"
+      }
+    },
+    "googlechrome": {
+      "source": {
+        "source": "github",
+        "repo": "GoogleChrome/modern-web-guidance"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "unslop@heydamir": true,
+    "modern-web-guidance@googlechrome": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(.claude/skills/attach-pr-evidence/scripts/publish-evidence.sh*)",
+      "Bash(npm ci)",
+      "Bash(npm install)",
+      "Bash(npm test*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run typecheck*)",
+      "Bash(npm run format*)",
+      "Bash(npm run build*)",
+      "Bash(npm run dev*)",
+      "Bash(npm run preview*)",
+      "Bash(npx playwright test*)",
+      "Bash(npx playwright show-report*)",
+      "Bash(npx tsc --noEmit*)",
+      "Bash(npx eslint*)",
+      "Bash(npx prettier*)",
+      "Bash(npx vitest*)",
+      "Bash(npx -y modern-web-guidance@latest search *)",
+      "Bash(npx -y modern-web-guidance@latest retrieve *)",
+      "mcp__chrome-devtools",
+      "Bash(npm audit)",
+      "Bash(npm audit --*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(**/.env.*.local)",
+      "Read(**/.env.development)",
+      "Read(**/.env.staging)",
+      "Read(**/.env.production)",
+      "Read(**/.env.test)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/id_rsa*)",
+      "Read(**/id_ed25519*)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials*.json)",
+      "Read(**/service-account*.json)",
+      "Read(**/*.tfvars)",
+      "Read(**/*.tfstate)",
+      "Read(**/*.tfstate.*)",
+      "Read(~/.aws/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.config/gcloud/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.docker/config.json)",
+      "Read(~/.netrc)",
+      "Read(~/.npmrc)",
+      "Edit(**/.env)",
+      "Edit(**/.env.local)",
+      "Edit(**/.env.*.local)",
+      "Edit(**/.env.development)",
+      "Edit(**/.env.staging)",
+      "Edit(**/.env.production)",
+      "Edit(**/.env.test)",
+      "Edit(**/*.pem)",
+      "Edit(**/*.key)",
+      "Edit(**/secrets/**)",
+      "Edit(**/*.tf)",
+      "Edit(**/*.tfvars)",
+      "Edit(**/*.tfstate*)",
+      "Edit(**/*.hcl)",
+      "Edit(**/terraform/**)",
+      "Edit(**/Pulumi*.yaml)",
+      "Edit(**/Chart.yaml)",
+      "Edit(**/charts/**)",
+      "Edit(**/helm/**)",
+      "Edit(**/k8s/**)",
+      "Edit(**/kubernetes/**)",
+      "Bash(kubectl *)",
+      "Bash(helm *)",
+      "Bash(terraform *)",
+      "Bash(terragrunt *)",
+      "Bash(tofu *)",
+      "Bash(pulumi *)",
+      "Bash(aws *)",
+      "Bash(gcloud *)",
+      "Bash(gsutil *)",
+      "Bash(az *)",
+      "Bash(eksctl *)",
+      "Bash(doctl *)",
+      "Bash(flyctl *)",
+      "Bash(fly *)",
+      "Bash(vercel *)",
+      "Bash(netlify *)",
+      "Bash(heroku *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(docker push *)",
+      "Bash(docker login *)",
+      "Bash(docker context *)",
+      "Bash(docker -H *)",
+      "Bash(docker --host *)",
+      "Bash(docker buildx build * --push*)",
+      "Bash(gh secret *)",
+      "Bash(gh workflow run *)",
+      "Bash(gh workflow enable *)",
+      "Bash(gh workflow disable *)",
+      "Bash(gh run rerun *)",
+      "Bash(gh run cancel *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh release create *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * +*)",
+      "Bash(printenv*)",
+      "Bash(env)",
+      "Bash(npx vercel*)",
+      "Bash(npx netlify*)",
+      "Bash(npx wrangler*)",
+      "Bash(wrangler *)",
+      "Bash(npx firebase*)",
+      "Bash(firebase *)",
+      "Bash(npx surge*)",
+      "Bash(surge *)",
+      "Bash(npx gh-pages*)",
+      "Bash(gh-pages *)",
+      "Bash(npm publish*)",
+      "Bash(pnpm publish*)",
+      "Bash(yarn publish*)",
+      "Bash(yarn npm publish*)",
+      "Bash(bun publish*)",
+      "Bash(npm login*)",
+      "Bash(npm adduser*)",
+      "Bash(npm token*)",
+      "Bash(npm run deploy*)",
+      "Bash(npm run release*)",
+      "Bash(pnpm deploy*)",
+      "Bash(yarn deploy*)",
+      "mcp__chrome-devtools__install_extension",
+      "mcp__chrome-devtools__install_pwa",
+      "Read(**/.dev.vars)",
+      "Edit(**/.dev.vars)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-bash.sh",
+            "timeout": 10,
+            "onFailure": "block",
+            "statusMessage": "Checking command against guardrails"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-web.sh",
+            "timeout": 10,
+            "onFailure": "block",
+            "statusMessage": "Checking command against web-frontend guardrails"
+          }
+        ]
+      }
+    ]
+  }
+}
