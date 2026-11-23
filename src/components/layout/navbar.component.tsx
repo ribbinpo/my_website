@@ -159,9 +159,16 @@ export function Navbar({
                 requestAnimationFrame(() => {
                   const target = document.getElementById(id);
                   history.pushState(null, "", `#${id}`);
-                  target?.setAttribute("tabindex", "-1");
+                  if (target && !target.hasAttribute("tabindex")) {
+                    // Focusable only for this hand-off, so later taps don't refocus it.
+                    target.setAttribute("tabindex", "-1");
+                    target.addEventListener("blur", () => target.removeAttribute("tabindex"), {
+                      once: true,
+                    });
+                  }
                   target?.focus({ preventScroll: true });
-                  target?.scrollIntoView({ behavior: "instant" });
+                  // "auto" follows the html scroll-behavior: smooth, or instant under reduced motion.
+                  target?.scrollIntoView({ behavior: "auto", block: "start" });
                 });
               }}
             >

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Copy } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { toast } from "sonner";
+import { Reveal } from "@/components/home/reveal.component";
 import { DisplayHeading } from "@/components/home/section-heading.component";
 import { contact, copy, type Locale } from "@/data/profile";
 import { studioButton } from "@/lib/studio-button";
@@ -30,16 +31,16 @@ export function Contact({ locale }: { locale: Locale }) {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className="border-b border-primary bg-surface-container"
+      className="flex min-h-screen-section flex-col justify-center border-b border-primary bg-surface-container"
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-gutter-xl px-gutter-md py-section md:px-page-margin lg:grid-cols-12">
-        <div className="flex flex-col gap-gutter-md lg:col-span-7">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-gutter-xl px-gutter-md py-section md:px-page-margin lg:grid-cols-12">
+        <Reveal className="flex flex-col gap-gutter-md lg:col-span-7">
           <p className="section-label font-label text-label-md text-primary uppercase">
             {t.contactLabel}
           </p>
           <DisplayHeading id="contact-title">{t.contactTitle}</DisplayHeading>
-        </div>
-        <div className="flex flex-col items-start gap-gutter-md lg:col-span-5">
+        </Reveal>
+        <Reveal index={2} className="flex flex-col items-start gap-gutter-md lg:col-span-5">
           <p className="text-body-lg text-on-surface">{t.contactText}</p>
           <div className="contact-email flex flex-wrap items-center gap-gutter-sm">
             <a
@@ -85,7 +86,7 @@ export function Contact({ locale }: { locale: Locale }) {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
