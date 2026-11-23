@@ -1,0 +1,15 @@
+uid=1_0 RootWebArea "Teerawut Saesim — Software Engineer" url="http://localhost:4173/#projects"
+  uid=1_12 main
+    uid=1_84 region "SELECTED PROJECTS"
+      uid=8_0 paragraph atomic live="polite" relevant="additions text"
+        uid=1_94 "Slide 3 of 3"
+  uid=1_194 region "Notifications alt+T" live="polite" relevant="additions text"
+  uid=8_1 dialog "CLOUD OBSERVABILITY" description="Resilient microservices deployment stack on Kubernetes with automated CI/CD, Grafana telemetry dashboards, and domain-driven service boundaries."
+    uid=8_2 "03 // PROJECT / DEVOPS / KUBERNETES"
+    uid=8_3 button "Close project details" focusable focused
+    uid=8_4 heading "CLOUD OBSERVABILITY" level="2"
+    uid=8_5 "Resilient microservices deployment stack on Kubernetes with automated CI/CD, Grafana telemetry dashboards, and domain-driven service boundaries."
+    uid=8_6 "KUBERNETES"
+    uid=8_7 "CI/CD"
+    uid=8_8 "GRAFANA"
+    uid=8_9 button "CLOSE"

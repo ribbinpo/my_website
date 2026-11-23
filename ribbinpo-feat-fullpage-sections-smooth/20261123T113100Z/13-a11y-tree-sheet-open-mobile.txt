@@ -1,0 +1,18 @@
+uid=1_0 RootWebArea "Teerawut Saesim — Software Engineer" url="http://localhost:4173/"
+  uid=1_12 main
+    uid=1_84 region "SELECTED PROJECTS"
+      uid=1_93 paragraph atomic live="polite" relevant="additions text"
+        uid=1_94 "Slide 1 of 3"
+  uid=1_194 region "Notifications alt+T" live="polite" relevant="additions text"
+  uid=2_0 dialog "NAVIGATION" description="Teerawut Saesim · Software Engineer"
+    uid=2_1 heading "NAVIGATION" level="2"
+    uid=2_2 "Teerawut Saesim · "
+    uid=2_3 "Software Engineer"
+    uid=2_4 navigation "Navigation"
+      uid=2_5 link "ABOUT" url="http://localhost:4173/#about"
+      uid=2_7 link "EXPERIENCE" url="http://localhost:4173/#experience"
+      uid=2_9 link "PROJECTS" url="http://localhost:4173/#projects"
+      uid=2_11 link "RECOGNITION" url="http://localhost:4173/#recognition"
+      uid=2_13 link "EDUCATION" url="http://localhost:4173/#education"
+      uid=2_15 link "CONTACT" url="http://localhost:4173/#contact"
+    uid=2_17 button "Close" focusable focused
